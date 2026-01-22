@@ -1,6 +1,6 @@
-CREATE DATABASE test_db;
 
-USE test_db;
+
+USE working_tbl_db;
 
 DROP TABLE IF EXISTS admin;
 CREATE TABLE admin (
