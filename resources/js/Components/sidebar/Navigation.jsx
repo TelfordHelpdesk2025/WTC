@@ -49,7 +49,8 @@ export default function NavLinks() {
   }
   links={[
     {
-      href: route("checklist_item.index"),
+      // href: route("checklist_item.index"),
+      href: route("checklist.item"),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-list"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6l11 0" /><path d="M9 12l11 0" /><path d="M9 18l11 0" /><path d="M5 6l0 .01" /><path d="M5 12l0 .01" /><path d="M5 18l0 .01" /></svg>
       ),
@@ -73,6 +74,16 @@ export default function NavLinks() {
                         href={route("admin")}
                         label="Administrators"
                         icon={<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-user-shield"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 21v-2a4 4 0 0 1 4 -4h2" /><path d="M22 16c0 4 -2.5 6 -3.5 6s-3.5 -2 -3.5 -6c1 0 2.5 -.5 3.5 -1.5c1 1 2.5 1.5 3.5 1.5" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /></svg>}
+                    />
+                </div>
+            )}
+
+            {["superadmin"].includes(emp_data?.emp_system_role) && (
+                <div>
+                    <SidebarLink
+                        href={route("checklist.item")}
+                        label="Checklist Items"
+                        icon={<i className="fa-solid fa-check mr-2"></i>}
                     />
                 </div>
             )}

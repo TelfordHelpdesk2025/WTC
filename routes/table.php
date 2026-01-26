@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TableChecklist\ChecklistItemsController;
 use App\Http\Controllers\TableChecklist\TableChecklistController;
 use App\Http\Controllers\TableChecklist\TableChecklistItemController;
 use App\Http\Controllers\TableChecklist\TableListController;
@@ -19,6 +20,11 @@ Route::prefix($app_name)->middleware(AuthMiddleware::class)->group(function () {
     Route::post("/table/checklist/item/store", [TableChecklistItemController::class, 'store'])->name('checklist_item.store');
     Route::put("/table/checklist/item/update/{id}", [TableChecklistItemController::class, 'update'])->name('checklist_item.update');
     Route::delete("/table/checklist/item/delete/{id}", [TableChecklistItemController::class, 'destroy'])->name('checklist_item.destroy');
+
+    Route::get("/table/checklist/item", [ChecklistItemsController::class, 'index'])->name('checklist.item');
+    Route::post("/bulk/checklist/item/store", [ChecklistItemsController::class, 'store'])->name('checklist.store.bulk');
+    Route::put('/checklist/item/{id}', [ChecklistItemsController::class, 'update'])->name('checklist.item.update');
+
 
     // Table List Route
     Route::get("/table/list/index", [TableListController::class, 'index'])->name('table.list.index');

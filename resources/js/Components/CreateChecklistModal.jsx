@@ -1,6 +1,7 @@
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveTwoToneIcon from "@mui/icons-material/SaveTwoTone";
 import NewLabelTwoToneIcon from "@mui/icons-material/NewLabelTwoTone";
+import { useEffect, useState } from "react";
 
 export default function CreateChecklistModal({
   formData,
@@ -9,7 +10,10 @@ export default function CreateChecklistModal({
   areas,
   setShowModal,
   saveChecklist,
+  categories = [],
 }) {
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   // ✅ Full day names
   const dayNames = [
     "Sunday",
@@ -22,9 +26,32 @@ export default function CreateChecklistModal({
   ];
 
   const todayIndex = new Date().getDay(); // 0–6
-  const currentDay = dayNames[todayIndex]; // "Thursday" etc.
-  const DAYS = [currentDay]; // Only current day for checklist
+  const currentDay = dayNames[todayIndex]; // e.g., "Thursday"
+  const DAYS = [currentDay]; // only current day for checklist
 
+  // Initialize checklistStatus for all items
+  useEffect(() => {
+    const updatedStatus = {};
+    formData.checklistItems.forEach((item) => {
+      updatedStatus[item.id] = {};
+      DAYS.forEach((day) => {
+        if (item.activity === "N/A" && item.frequency === "N/A") {
+          updatedStatus[item.id][day] = "0"; // N/A
+        } else {
+          updatedStatus[item.id][day] = "1"; // ✔ auto-check
+        }
+      });
+    });
+    setFormData((prev) => ({
+      ...prev,
+      checklistStatus: updatedStatus,
+    }));
+  }, [formData.checklistItems]);
+
+  // Filter checklist items based on selected category
+  const filteredItems = selectedCategory
+    ? formData.checklistItems.filter((item) => item.category === selectedCategory)
+    : [];
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -43,16 +70,20 @@ export default function CreateChecklistModal({
         </div>
 
         {/* Body */}
-        <div className="p-4 space-y-4">
-          {/* Inputs */}
-          <div className="flex gap-2 text-gray-700">
-            <label className="font-semibold mt-2">TABLE NO:</label>
+        <div className="p-4 space-y-4 text-gray-700">
+          {/* Select Category */}
+          <div className="flex gap-4 items-center">
+            
+          </div>
+
+          {/* Table & Area */}
+          <div className="flex gap-10 items-center">
+            
+            <label className="font-semibold">TABLE NO:</label>
             <select
-              className="border p-2 w-64 rounded"
+              className="border p-2 w-64 rounded-md"
               value={formData.table}
-              onChange={(e) =>
-                setFormData({ ...formData, table: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, table: e.target.value })}
             >
               <option value="">Select Table</option>
               {tables.map((t) => (
@@ -61,26 +92,12 @@ export default function CreateChecklistModal({
                 </option>
               ))}
             </select>
-          </div>
 
-          <div className="flex gap-10 text-gray-700">
-            <label className="font-semibold">SHIFT:</label>
-            <input
-              type="text"
-              className="border-none p-2 py-0 w-32 rounded font-semibold"
-              value={formData.shift}
-              readOnly
-            />
-          </div>
-
-          <div className="flex gap-10 text-gray-700">
-            <label className="font-semibold mt-2">AREA:</label>
+            <label className="font-semibold">AREA:</label>
             <select
-              className="border p-2 w-64 rounded"
+              className="border p-2 w-64 rounded-md"
               value={formData.area}
-              onChange={(e) =>
-                setFormData({ ...formData, area: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, area: e.target.value })}
             >
               <option value="">Select Area</option>
               {areas.map((a) => (
@@ -89,121 +106,91 @@ export default function CreateChecklistModal({
                 </option>
               ))}
             </select>
+
+            <label className="font-semibold">Category:</label>
+            <select
+              className="border p-2 w-64 rounded-md"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">-- Select Category --</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Checklist Table */}
-          <div className="overflow-x-auto text-gray-700">
-            <table className="w-full table-auto border border-gray-300">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th colSpan={5} className="border px-1 py-1">
-                    <input
-                      type="text"
-                      className="border-none p-1 w-full rounded text-center bg-gray-100"
-                      value={formData.workweek}
-                      readOnly
-                    />
-                  </th>
-                </tr>
-                <tr>
-                  <td colSpan={4} />
-                  {DAYS.map((d) => (
-                    <td key={d} className="border-none text-center rounded bg-gray-100 font-semibold text-blue-700">
-                      {d}
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td colSpan={3} />
-                  <td>Performed By</td>
-                  {DAYS.map((d) => (
-                    <td className="border px-1 py-1 text-center" key={d}>
+          {selectedCategory && (
+            <div className="overflow-x-auto mt-4">
+              <table className="w-full border border-gray-300 table-auto">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th colSpan={5} className="border px-1 py-1">
                       <input
                         type="text"
-                        className="border-none p-1 w-32 text-center rounded bg-gray-100 font-semibold text-blue-700"
-                        value={formData.performedBy}
+                        className="border-none p-1 w-full rounded text-center bg-gray-100"
+                        value={formData.workweek}
                         readOnly
                       />
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td colSpan={3} />
-                  <td>Date Performed</td>
-                  {DAYS.map((d) => (
-                    <td className="border px-1 py-1 text-center" key={d}>
-                      <input
-                        type="text"
-                        className="border-none p-1 w-32 text-center rounded bg-gray-100 font-semibold text-blue-700"
-                        value={formData.datePerformed}
-                        readOnly
-                      />
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <th className="border px-1 py-1">Checklist Item</th>
-                  <th className="border px-1 py-1">Requirement</th>
-                  <th className="border px-1 py-1">Activity</th>
-                  <th className="border px-1 py-1">Frequency</th>
-                  <th className="border px-1 py-1"></th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {formData.checklistItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className="border px-1 py-1">{item.checklist_item}</td>
-                    <td className="border px-1 py-1 text-center">
-                      {item.requirement}
-                    </td>
-                    <td className="border px-1 py-1 text-center">{item.activity}</td>
-                    <td className="border px-1 py-1 text-center">{item.frequency}</td>
-                    {DAYS.map((d) => (
-                      <td key={d} className="border px-1 py-1 text-center">
-
+                    </th>
+                  </tr>
+                  <tr>
+                    <th>Checklist Item</th>
+                    <th>Requirement</th>
+                    <th>Activity</th>
+                    <th>Frequency</th>
+                    <th>Day / Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredItems.map((item) => (
+                    <tr key={item.id}>
+                      <td className="border px-1 py-1">{item.checklist_item}</td>
+                      <td className="border px-1 py-1 text-center">{item.requirement}</td>
+                      <td className="border px-1 py-1 text-center">{item.activity}</td>
+                      <td className="border px-1 py-1 text-center">{item.frequency}</td>
+                      <td className="border px-1 py-1 text-center">
                         <select
                           className="border-none p-1 rounded w-28 text-center"
-                          value={formData.checklistStatus[item.id]?.[d] || ""}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              checklistStatus: {
-                                ...formData.checklistStatus,
-                                [item.id]: {
-                                  ...formData.checklistStatus[item.id],
-                                  [d]: e.target.value,
-                                },
-                              },
-                            })
-                          }
+                          value={formData.checklistStatus[item.id]?.[DAYS[0]] || ""}
+                          disabled
                         >
-                          <option value="">Select</option>
                           <option value="1">✔</option>
                           <option value="0">N/A</option>
                         </select>
                       </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </tr>
+                  ))}
+                  {filteredItems.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="text-center py-2 text-gray-500">
+                        No checklist items for selected category
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex justify-end gap-2 mt-4">
             <button
-              className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 text-white"
+              className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 text-white flex items-center gap-1"
               onClick={() => setShowModal(false)}
             >
               <CancelIcon /> Cancel
             </button>
             <button
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              onClick={saveChecklist}
-            >
-              <SaveTwoToneIcon /> Save
-            </button>
+  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1"
+  onClick={() => saveChecklist(selectedCategory)}
+>
+  <SaveTwoToneIcon /> Save
+</button>
+
           </div>
         </div>
       </div>

@@ -43,8 +43,15 @@ class TableChecklistController extends Controller
             return $result;
         }
 
+        $categories = DB::connection('mysql')
+            ->table('working_tbl_checklist')
+            ->select('category')
+            ->distinct()
+            ->pluck('category');
+
         return Inertia::render('TableChecklist/TableChecklist', [
             'tableData' => $result['data'],
+            'categories' => $categories,
             'tableFilters' => $request->only([
                 'search',
                 'perPage',
@@ -60,7 +67,7 @@ class TableChecklistController extends Controller
 
             // ✅ MASTER CHECKLIST ITEMS
             'checklistItems' => DB::table('working_tbl_checklist')
-                ->select('id', 'checklist_item', 'requirement', 'activity', 'frequency')
+                ->select('id', 'category', 'checklist_item', 'requirement', 'activity', 'frequency')
                 ->orderBy('id')
                 ->get(),
 

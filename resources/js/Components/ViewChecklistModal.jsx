@@ -18,7 +18,23 @@ export default function ViewChecklistModal({
   const checklistItems = formData.checklistItems || [];
 
   // backend day (single day only)
-  const backendDay = checklistItems[0]?.day || "";
+  // const backendDay = checklistItems[0]?.day || "";
+
+  const grouped = {};
+
+checklistItems.forEach(item => {
+  if (!grouped[item.checklist_item]) {
+    grouped[item.checklist_item] = {
+      ...item,
+      statuses: {}
+    };
+  }
+
+  grouped[item.checklist_item].statuses[item.day] = item;
+});
+
+const rows = Object.values(grouped);
+
 
   const allDays = dayOrder;
 
@@ -82,30 +98,33 @@ export default function ViewChecklistModal({
                 </tr>
 
                 {/* Performed By */}
-                <tr>
-                  <td colSpan={3} />
-                  <td className="font-semibold">Performed By:</td>
-                  {allDays.map((d) => (
-                    <td key={d} className="border px-1 py-1 text-center">
-                      {d === backendDay
-                        ? checklistItems[0]?.performedBy || ""
-                        : ""}
-                    </td>
-                  ))}
-                </tr>
+<tr>
+  <td colSpan={3} />
+  <td className="font-semibold">Performed By:</td>
+  {allDays.map(d => {
+    const item = checklistItems.find(i => i.day === d);
+    return (
+      <td key={d} className="border px-1 py-1 text-center">
+        {item?.performedBy || ""}
+      </td>
+    );
+  })}
+</tr>
 
-                {/* Date Performed */}
-                <tr>
-                  <td colSpan={3} />
-                  <td className="font-semibold">Date Performed:</td>
-                  {allDays.map((d) => (
-                    <td key={d} className="border px-1 py-1 text-center">
-                      {d === backendDay
-                        ? checklistItems[0]?.datePerformed || ""
-                        : ""}
-                    </td>
-                  ))}
-                </tr>
+{/* Date Performed */}
+<tr>
+  <td colSpan={3} />
+  <td className="font-semibold">Date Performed:</td>
+  {allDays.map(d => {
+    const item = checklistItems.find(i => i.day === d);
+    return (
+      <td key={d} className="border px-1 py-1 text-center">
+        {item?.datePerformed || ""}
+      </td>
+    );
+  })}
+</tr>
+
 
                 {/* Column headers */}
                 <tr>
@@ -121,38 +140,30 @@ export default function ViewChecklistModal({
                 </tr>
               </thead>
 
-              <tbody>
-                {checklistItems.map((item, index) => (
-                  <tr key={index}>
-                    <td className="border px-1 py-1">
-                      {item.checklist_item}
-                    </td>
-                    <td className="border px-1 py-1 text-center">
-                      {item.requirement}
-                    </td>
-                    <td className="border px-1 py-1 text-center">
-                      {item.activity}
-                    </td>
-                    <td className="border px-1 py-1 text-center">
-                      {item.frequency}
-                    </td>
+             <tbody>
+  {rows.map((row, index) => (
+    <tr key={index}>
+      <td className="border px-1 py-1">{row.checklist_item}</td>
+      <td className="border px-1 py-1 text-center">{row.requirement}</td>
+      <td className="border px-1 py-1 text-center">{row.activity}</td>
+      <td className="border px-1 py-1 text-center">{row.frequency}</td>
 
-                    {allDays.map((d) => (
-  <td
-    key={`${index}-${d}`}
-    className="border px-1 py-1 text-center"
-  >
-    {d === backendDay
-      ? item.checklistStatus === 1
-        ? "✔"
-        : "N/A"
-      : ""}
-  </td>
-))}
+      {allDays.map((d) => {
+        const cell = row.statuses[d];
+        return (
+          <td key={d} className="border px-1 py-1 text-center">
+            {cell
+              ? cell.checklistStatus === 1
+                ? "✔"
+                : "N/A"
+              : ""}
+          </td>
+        );
+      })}
+    </tr>
+  ))}
+</tbody>
 
-                  </tr>
-                ))}
-              </tbody>
             </table>
           </div>
 

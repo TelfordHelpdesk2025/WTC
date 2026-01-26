@@ -22,6 +22,9 @@ export default function TableChecklist({
   checklistItems = [],
   tables = [],
   areas = [],
+  categories = [],
+  shifts = [],
+  ww = [],
 })
  {
 
@@ -164,14 +167,62 @@ export default function TableChecklist({
   /* =========================
       SAVE CHECKLIST
   ========================== */
-  const saveChecklist = () => {
-    if (!formData.table || !formData.area) {
-      alert("Please select table and area.");
-      return;
-    }
+//   const saveChecklist = () => {
+//     if (!formData.table || !formData.area) {
+//       alert("Please select table and area.");
+//       return;
+//     }
 
-    const payload = [];
-    checklistItems.forEach((item) => {
+//     const payload = [];
+//     checklistItems.forEach((item) => {
+//       const days = formData.checklistStatus[item.id] || {};
+//       Object.entries(days).forEach(([day, status]) => {
+//         if (status !== "") {
+//           payload.push({
+//             day,
+//             performed_by: formData.performedBy,
+//             date_performed: formData.datePerformed,
+//             checklist_item: item.checklist_item,
+//             requirement: item.requirement,
+//             activity: item.activity,
+//             frequency: item.frequency,
+//             checklistStatus: Number(status),
+//           });
+//         }
+//       });
+//     });
+
+//   router.post(route("table.checklist.store"), {
+//   table_name: formData.table,
+//   area: formData.area,
+//   shift: formData.shift,
+//   ww: formData.workweek,
+//   checklist_item: payload,
+// }, {
+//   onSuccess: () => {
+//     // Just close the modal; the flash alert will handle messages
+//     setShowModal(false);
+//   },
+//   onError: () => {
+//     // optional: log errors if needed
+//     console.error("Something went wrong saving the checklist.");
+//   },
+// });
+
+
+//   };
+
+const saveChecklist = (selectedCategory) => {
+  if (!selectedCategory) {
+    alert("Please select a category before saving.");
+    return;
+  }
+
+  const payload = [];
+
+  formData.checklistItems
+    .filter(item => item.category === selectedCategory)
+    .forEach(item => {
       const days = formData.checklistStatus[item.id] || {};
       Object.entries(days).forEach(([day, status]) => {
         if (status !== "") {
@@ -184,30 +235,23 @@ export default function TableChecklist({
             activity: item.activity,
             frequency: item.frequency,
             checklistStatus: Number(status),
+            category: item.category,
           });
         }
       });
     });
 
   router.post(route("table.checklist.store"), {
-  table_name: formData.table,
-  area: formData.area,
-  shift: formData.shift,
-  ww: formData.workweek,
-  checklist_item: payload,
-}, {
-  onSuccess: () => {
-    // Just close the modal; the flash alert will handle messages
-    setShowModal(false);
-  },
-  onError: () => {
-    // optional: log errors if needed
-    console.error("Something went wrong saving the checklist.");
-  },
-});
-
-
-  };
+    table_name: formData.table,
+    area: formData.area,
+    shift: formData.shift,
+    ww: formData.workweek,
+    checklist_item: payload,
+  }, {
+    onSuccess: () => setShowModal(false),
+    onError: () => console.error("Failed to save checklist"),
+  });
+};
 
 
 
@@ -350,12 +394,14 @@ function getShiftColor(shift) {
         <div className="flex items-center gap-2 text-xl font-bold">
           <TableRestaurantTwoToneIcon /> Working Table Checklist
         </div>
-        <button
-          className="text-white bg-green-500 border-2 border-emerald-600 btn hover:bg-green-700 hover:text-white flex items-center gap-2"
-          onClick={() => openModal("create")}
-        >
-          <AddCircleTwoToneIcon /> WW Checklist
-        </button>
+          {!["superadmin", "admin"].includes(emp_data.emp_system_role) &&(
+            <button
+              className="text-white bg-green-500 border-2 border-emerald-600 btn hover:bg-green-700 hover:text-white flex items-center gap-2"
+              onClick={() => openModal("create")}
+            >
+              <AddCircleTwoToneIcon /> Table Checklist
+            </button>
+          )}
       </div>
 
       <DataTable
@@ -382,8 +428,10 @@ function getShiftColor(shift) {
     areas={areas}
     setShowModal={setShowModal}
     saveChecklist={saveChecklist}
+    categories={categories} // ✅ pass distinct categories here
   />
 )}
+
 
 {showModal && mode === "view" && (
   <ViewChecklistModal
