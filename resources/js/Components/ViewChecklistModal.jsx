@@ -75,6 +75,14 @@ const rows = Object.values(grouped);
 
           {/* CHECKLIST TABLE */}
           <div className="overflow-x-auto">
+            <div className="flex justify-center mb-2 mt-4 bg-gradient-to-r from-yellow-100 to-amber-100 text-stone-700 rounded">
+                <div className="text-center">
+                  <h5 className="font-semibold pt-2"><i className="fa-solid fa-map-pin"></i> Legend Code</h5>
+                  <p className=" text-sm p-2 pb-4 ">
+                  &nbsp; &nbsp; &nbsp; &nbsp; <b>Frequency: </b>&nbsp; &nbsp; I = Start of the Shift; M = Middle of the Shift; O = End of the Shift; <br /> <b>Activity: &nbsp; &nbsp; &nbsp; </b>A = Check; B = Clean; C = Visual Inspection; D = Turn On;
+                  </p>
+                </div>
+              </div>
             <table className="w-full table-auto border border-gray-300">
               <thead className="bg-gray-100">
                 {/* Workweek */}
@@ -99,8 +107,7 @@ const rows = Object.values(grouped);
 
                 {/* Performed By */}
 <tr>
-  <td colSpan={3} />
-  <td className="font-semibold">Performed By:</td>
+  <td colSpan={4} className="text-right"><label className="text-right font-semibold mr-2">Performed By: </label></td>
   {allDays.map(d => {
     const item = checklistItems.find(i => i.day === d);
     return (
@@ -113,8 +120,7 @@ const rows = Object.values(grouped);
 
 {/* Date Performed */}
 <tr>
-  <td colSpan={3} />
-  <td className="font-semibold">Date Performed:</td>
+  <td colSpan={4} className="text-right"><label className="text-right font-semibold mr-2">Date Performed: </label></td>
   {allDays.map(d => {
     const item = checklistItems.find(i => i.day === d);
     return (
@@ -168,6 +174,7 @@ const rows = Object.values(grouped);
           </div>
 
           {/* Footer */}
+
           <div className="flex justify-end mt-4">
             <button
               className="px-4 py-2 bg-red-500 rounded hover:bg-red-600 text-white"

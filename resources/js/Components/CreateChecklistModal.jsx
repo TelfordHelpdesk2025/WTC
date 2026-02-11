@@ -2,6 +2,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import SaveTwoToneIcon from "@mui/icons-material/SaveTwoTone";
 import NewLabelTwoToneIcon from "@mui/icons-material/NewLabelTwoTone";
 import { useEffect, useState } from "react";
+import { Steps, Select } from "antd";
 
 export default function CreateChecklistModal({
   formData,
@@ -73,39 +74,40 @@ export default function CreateChecklistModal({
         <div className="p-4 space-y-4 text-gray-700">
           {/* Select Category */}
           <div className="flex gap-4 items-center">
-            
+
           </div>
 
           {/* Table & Area */}
           <div className="flex gap-10 items-center">
-            
+
             <label className="font-semibold">TABLE NO:</label>
-            <select
-              className="border p-2 w-64 rounded-md"
-              value={formData.table}
-              onChange={(e) => setFormData({ ...formData, table: e.target.value })}
-            >
-              <option value="">Select Table</option>
+            <Select
+            showSearch
+            className="w-64 border border-gray-500 p-2 rounded-md text-black"
+            placeholder="Select Table..."
+            onChange={(value) => setFormData({ ...formData, table: value })} value={formData.table}>
               {tables.map((t) => (
-                <option key={t.table_name} value={t.table_name}>
+                <Select.Option key={t.table_name} value={t.table_name}>
                   {t.table_name}
-                </option>
+                </Select.Option>
               ))}
-            </select>
+            </Select>
+
+
+
 
             <label className="font-semibold">AREA:</label>
-            <select
-              className="border p-2 w-64 rounded-md"
-              value={formData.area}
-              onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-            >
-              <option value="">Select Area</option>
+             <Select
+            showSearch
+            className="w-64 border border-gray-500 p-2 rounded-md text-black"
+            placeholder="Select Area..."
+            onChange={(value) => setFormData({ ...formData, area: value })} value={formData.area}>
               {areas.map((a) => (
-                <option key={a.location_name} value={a.location_name}>
+                <Select.Option key={a.location_name} value={a.location_name}>
                   {a.location_name}
-                </option>
+                </Select.Option>
               ))}
-            </select>
+            </Select>
 
             <label className="font-semibold">Category:</label>
             <select
@@ -122,9 +124,18 @@ export default function CreateChecklistModal({
             </select>
           </div>
 
+
           {/* Checklist Table */}
           {selectedCategory && (
             <div className="overflow-x-auto mt-4">
+                <div className="flex justify-center mb-2 mt-4 bg-gradient-to-r from-yellow-100 to-amber-100 text-stone-700 rounded">
+                <div className="text-center">
+                  <h5 className="font-semibold pt-2"><i className="fa-solid fa-map-pin"></i> Legend Code</h5>
+                  <p className=" text-sm p-2 pb-4 ">
+                  &nbsp; &nbsp; &nbsp; &nbsp; <b>Frequency: </b>&nbsp; &nbsp; I = Start of the Shift; M = Middle of the Shift; O = End of the Shift; <br /> <b>Activity: &nbsp; &nbsp; &nbsp; </b>A = Check; B = Clean; C = Visual Inspection; D = Turn On;
+                  </p>
+                </div>
+              </div>
               <table className="w-full border border-gray-300 table-auto">
                 <thead className="bg-gray-100">
                   <tr>
@@ -136,6 +147,22 @@ export default function CreateChecklistModal({
                         readOnly
                       />
                     </th>
+                  </tr>
+                  <tr>
+                    <td colSpan={4}></td>
+                    <td className="text-center">
+                      <label className="text-right"><label className="font-bold text-indigo-800">{currentDay}</label></label>
+                    </td>
+                  </tr>
+                  <tr>
+                      <td colSpan={4} className="text-right"><label className="text-right font-semibold mr-2">Performed By: </label></td>
+                      <td className="border px-1 py-1 text-center">{formData.performedBy}</td>
+                  </tr>
+
+                  {/* Date Performed */}
+                  <tr>
+                      <td colSpan={4} className="text-right"><label className="text-right font-semibold mr-2">Date Performed:</label></td>
+                      <td className="border px-1 py-1 text-center">{formData.datePerformed}</td>
                   </tr>
                   <tr>
                     <th>Checklist Item</th>

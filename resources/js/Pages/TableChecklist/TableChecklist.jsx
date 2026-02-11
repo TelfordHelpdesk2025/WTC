@@ -28,12 +28,12 @@ export default function TableChecklist({
 })
  {
 
-    
+
   /* =========================
       DATE / SHIFT / WW
   ========================== */
  const getCurrentWorkweek = () => {
-  const start = new Date("2025-11-03"); // starting reference
+  const start = new Date("2024-11-03"); // starting reference
   const today = new Date();
 
   // total weeks passed since start
@@ -45,7 +45,7 @@ export default function TableChecklist({
   const weekInCycle = (totalWeeks % 52) + 1; // 1..52
 
   // base number per cycle (601, 701, 801,...)
-  const base = 601 + cycle * 100;
+  const base = 501 + cycle * 100;
 
   return `WW${base + (weekInCycle - 1)}`; // e.g., 601..652, 701..752, 801..852
 };
@@ -162,7 +162,7 @@ export default function TableChecklist({
     setShowModal(true);
   };
 
-  
+
 
   /* =========================
       SAVE CHECKLIST
@@ -370,7 +370,7 @@ function getShiftColor(shift) {
       RENDER
   ========================== */
   return (
-    
+
     <AuthenticatedLayout>
 
       <Snackbar
@@ -379,7 +379,7 @@ function getShiftColor(shift) {
   onClose={() => setOpen(false)}
   anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
 >
-  <Alert 
+  <Alert
     onClose={() => setOpen(false)}
     severity={severity}  // ✅ dynamic
     sx={{ width: '100%' }}
@@ -409,11 +409,18 @@ function getShiftColor(shift) {
           { key: "table_name", label: "Table No." },
           { key: "area", label: "Area" },
           { key: "shift", label: "Shift" },
-          { key: "ww", label: "WW" },
+          { key: "ww", label: "Work Week" },
           { key: "actions", label: "Actions" },
         ]}
         data={dataWithAction}
-        meta={tableData}
+        meta={{
+                    from: tableData.from,
+                    to: tableData.to,
+                    total: tableData.total,
+                    links: tableData.links,
+                    currentPage: tableData.current_page,
+                    lastPage: tableData.last_page,
+                }}
         routeName={route("table.checklist.index")}
         filters={tableFilters}
         rowKey="id"

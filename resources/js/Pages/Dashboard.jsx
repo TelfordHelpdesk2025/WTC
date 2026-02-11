@@ -33,19 +33,19 @@ export default function Dashboard({
 
       <Box sx={{ p: 3 }}>
         <Typography
-  variant="h4"
-  gutterBottom
-  sx={{
-    display: "flex",
-    alignItems: "center",
-    gap: 1,
-    fontFamily: "'Patrick Hand', cursive", // <-- doodle / hand-drawn font
-    fontWeight: 400,
-    color: "#a3972b"
-  }}
->
-  <DashboardTwoToneIcon sx={{ fontSize: 40, color: '#a3972b' }} /> Dashboard
-</Typography>
+          variant="h4"
+          gutterBottom
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            fontFamily: "'Patrick Hand', cursive", // <-- doodle / hand-drawn font
+            fontWeight: 400,
+            color: "#a3972b"
+          }}
+        >
+          <DashboardTwoToneIcon sx={{ fontSize: 40, color: '#a3972b' }} /> Dashboard Summary
+        </Typography>
 
         {/* SUMMARY CARDS */}
         <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
@@ -91,7 +91,7 @@ export default function Dashboard({
             <PieChart
               height={300}
               series={[{
-                data: metrics.slice(1,3).map((m,i) => ({
+                data: metrics.slice(1, 3).map((m, i) => ({
                   id: i,
                   value: m.value,
                   label: m.label

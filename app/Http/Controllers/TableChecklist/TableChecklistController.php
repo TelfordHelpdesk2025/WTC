@@ -78,7 +78,7 @@ class TableChecklistController extends Controller
                 ->get(),
 
             // ✅ AREA DROPDOWN
-            'areas' => DB::table('qdn_db.location_list')
+            'areas' => DB::table('location_tbl')
                 ->select('location_name')
                 ->orderBy('location_name')
                 ->get(),
@@ -120,13 +120,13 @@ class TableChecklistController extends Controller
 
             if ($conflicts->isNotEmpty()) {
                 $firstConflict = $conflicts->first();
-                $conflictMessage = "Checklist for <br/> 
+                $conflictMessage = "Checklist for <br/>
                                     <b>Table</b>: '{$request->table_name}'<br/>
                                     <b>Area</b>: '{$request->area}'<br/>
                                     <b>Shift</b>: '{$request->shift}'<br/>
                                     <b>Workweek</b>: '{$request->ww}'<br/>
                                     <b>Day</b>: '{$firstConflict['day']}'<br/>
-                                    <b>Date</b>: '{$firstConflict['date_performed']}' <br/> 
+                                    <b>Date</b>: '{$firstConflict['date_performed']}' <br/>
                                     Already exists.
                                    ";
                 return redirect()->back()->with('error', $conflictMessage);

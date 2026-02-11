@@ -78,11 +78,12 @@ export default function Sidebar() {
                 </Link>
 
                 <Navigation />
-                   <div className="text-center mt-4">
+
+                <ThemeToggler toggleTheme={toggleTheme} theme={theme} />
+                <div className="text-center mt-4">
                     <small className="text-black text-sm">Copyright © {new Date().getFullYear()}.<br /> All rights reserved.</small><br />
                     <small className="text-gray-700">Created by: <b>Dharwines</b></small>
                 </div>
-                <ThemeToggler toggleTheme={toggleTheme} theme={theme} />
             </div>
         </div>
     );

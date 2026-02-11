@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 use function Pest\Laravel\session;
 
-class TableListController extends Controller
+class LocationListController extends Controller
 {
     protected $datatable;
     protected $datatable1;
@@ -27,15 +27,15 @@ class TableListController extends Controller
         $result = $this->datatable->handle(
             $request,
             'mysql',
-            'table_tbl',
+            'location_tbl',
             [
 
                 'conditions' => function ($query) {
                     return $query
-                        ->OrderBy('table_area', 'ASC');
+                        ->OrderBy('location_name', 'ASC');
                 },
 
-                'searchColumns' => ['table_name', 'table_area', 'table_description', 'created_by', 'date_created'],
+                'searchColumns' => ['location_name', 'location_description', 'created_by', 'date_created'],
             ]
         );
 
@@ -44,7 +44,7 @@ class TableListController extends Controller
             return $result;
         }
 
-        return Inertia::render('TableChecklist/TableList', [
+        return Inertia::render('TableChecklist/LocationList', [
             'tableData' => $result['data'],
             'tableFilters' => $request->only([
                 'search',
@@ -62,17 +62,16 @@ class TableListController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'table_name' => 'required|string|max:255',
-            'table_area' => 'required|string|max:255',
-            'table_description'    => 'nullable|string',
+            'location_name' => 'required|string|max:255',
+            'location_description'    => 'nullable|string',
             'created_by'     => 'required|string|max:255',
         ]);
 
-        // 🔍 Check kung existing na ang table_name
+        // 🔍 Check kung existing na ang location_name
         $exists = DB::connection('mysql')
-            ->table('table_tbl')
-            ->whereRaw('LOWER(table_name) = ?', [
-                strtolower(trim($validated['table_name']))
+            ->table('location_tbl')
+            ->whereRaw('LOWER(location_name) = ?', [
+                strtolower(trim($validated['location_name']))
             ])
             ->exists();
 
@@ -81,21 +80,20 @@ class TableListController extends Controller
                 ->back()
                 ->with('flash', [
                     'type' => 'warning',
-                    'message' => 'Table Name already exists.'
+                    'message' => 'Location name already exists.'
                 ])
                 ->withErrors([
-                    'table_name' => 'Table Name already exists.'
+                    'location_name' => 'Location name already exists.'
                 ])
                 ->withInput();
         }
 
         // ✅ Insert if not existing
         DB::connection('mysql')
-            ->table('table_tbl')
+            ->table('location_tbl')
             ->insert([
-                'table_name' => trim($validated['table_name']),
-                'table_area' => trim($validated['table_area']),
-                'table_description'    => $validated['table_description'] ?? null,
+                'location_name' => trim($validated['location_name']),
+                'location_description'    => $validated['location_description'] ?? null,
                 'created_by'     => $validated['created_by'],
             ]);
 
@@ -111,19 +109,17 @@ class TableListController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'table_name' => 'required|string',
-            'table_area' => 'required|string',
-            'table_description' => 'required|string',
+            'location_name' => 'required|string',
+            'location_description' => 'required|string',
             'updated_by' => 'required|string|max:255',
         ]);
 
         DB::connection('mysql')
-            ->table('table_tbl')
+            ->table('location_tbl')
             ->where('id', $id)
             ->update([
-                'table_name' => $validated['table_name'],
-                'table_area' => $validated['table_area'],
-                'table_description' => $validated['table_description'],
+                'location_name' => $validated['location_name'],
+                'location_description' => $validated['location_description'],
                 'updated_by' => $validated['updated_by'],
             ]);
 
